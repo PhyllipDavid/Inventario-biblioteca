@@ -1,0 +1,117 @@
+    switch (opcao) {
+        case 1:
+            printf("\n=== LISTA DE USUÁRIOS ===\n");  
+            for (int i = 0; i < numUsuarios; i++) {  // Lista todos os usuários cadastrados
+                printf("ID: %d, Senha: %s\n", usuarios[i].id, usuarios[i].senha);
+            }
+            printf("=========================\n");
+            break;
+        case 2: {
+            printf("Digite o ID do usuário a remover: ");
+            int idRemover;
+            scanf("%d", &idRemover);         // Remove um usuário específico pelo ID
+            getchar();
+
+             // Procura o usuário pelo ID
+            int indiceUsuario = -1;
+            for (int i = 0; i < numUsuarios; i++) {
+                if (usuarios[i].id == idRemover) {
+                    indiceUsuario = i;
+                    break;
+                }
+            }
+
+            if (indiceUsuario != -1) {  // Se o usuário for encontrado
+                // Atualiza o idUsuario dos livros alugados pelo usuário removido
+                for (int i = 0; i < numLivros; i++) {
+                    if (biblioteca[i].idUsuario == idRemover) {
+                        biblioteca[i].idUsuario = 0; // Define como não alugado
+                    }
+                }
+
+                // Remove o usuário da lista
+                for (int i = indiceUsuario; i < numUsuarios - 1; i++) {
+                    usuarios[i] = usuarios[i + 1];
+                }
+                numUsuarios--; // Decrementa o número total de usuários
+
+                printf("Usuário removido com sucesso!\n");
+            } else {
+                printf("Usuário não encontrado!\n");
+            }
+            break;
+        }
+        default:
+            printf("Opção inválida!\n");
+            break;
+    }
+}
+
+// Função para fazer login como administrador
+int fazerLoginAdmin() {
+    char usuario[50];
+    char senha[50];
+
+    printf("Usuário: ");
+    scanf("%49s", usuario);
+    printf("Senha: ");
+    scanf("%49s", senha);
+
+         // Verifica se o usuário e senha são de administrador
+    if (strcmp(usuario, "admin") == 0 && strcmp(senha, "1234") == 0) {  // strcmp é uma função retorna 0 se as strings são iguais, um valor negativo se a primeira string é menor, ou um valor positivo se a primeira string é maior
+        isAdmin = 1;    // Define que o usuário logado é um administrador
+        return 1; // Login bem-sucedido
+    } else {
+        printf("Usuário ou senha inválidos!\n");
+        return 0; // Login falhou
+    }
+}
+
+// Bloco 5: Funções de Manipulação de Usuários
+// Função para criar um novo usuário
+void criarUsuario() {
+    if (numUsuarios >= 100) {
+        printf("Limite de usuários alcançado!\n");
+        return;
+    }
+
+    Usuario novoUsuario;   // Declara uma variável do tipo 'Usuario' para armazenar os dados do novo usuário
+    printf("ID do usuário: ");
+    scanf("%d",&novoUsuario.id);
+    printf("Senha: ");
+    scanf("%49s", novoUsuario.senha);  // Usa %49s para evitar overflow, limitando a entrada a 49 caracteres
+
+    usuarios[numUsuarios++] = novoUsuario;
+    printf("Usuário criado com sucesso!\n");
+}
+
+// Função para fazer login como usuário normal
+int fazerLoginUsuario() {
+    int id;
+    char senha[50];
+
+    printf("ID do usuário: ");
+    scanf("%d", &id);
+    printf("Senha: ");
+    scanf("%49s", senha);
+    
+ // Percorre a lista de usuários para verificar se as credenciais são válidas
+    for (int i = 0; i < numUsuarios; i++) {
+    	 // Compara o ID e a senha fornecidos com os armazenados no sistema
+        if (usuarios[i].id == id && strcmp(usuarios[i].senha, senha) == 0) {
+            return 1; // Login bem-sucedido
+        }
+    }
+    printf("Usuário ou senha inválidos!\n");
+    return 0; // Login falhou
+}
+
+int main();
+ 
+// Função para retornar à tela de login
+void voltarTelaLogin() {
+    salvarDados();   // Salva os dados atuais (inventário da biblioteca e dados dos usuários) em um arquivo binário
+    isAdmin = 0; // Reinicia o status de administrador
+    printf("Voltando para a tela de login...\n");
+    main(); // Chama a função main() para retornar à tela inicial
+}
